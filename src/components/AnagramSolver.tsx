@@ -31,20 +31,22 @@ export function AnagramSolver({ data, onUpdate }: AnagramSolverProps) {
     // knownLetters is { index: char }
     const [known, setKnown] = useState<KnownLetters>(data.knownLetters || {})
 
-    // Sync props to local state if ID changes (handled by key in App, but safety check)
-    useEffect(() => {
-        setLength(data.length)
-        setPool(data.pool)
-        setName(data.name)
-        setKnown(data.knownLetters || {})
-        setShuffledChars([])
-        setError(null)
-    }, [data.id, data.length, data.pool, data.name, data.knownLetters])
+    // Local state handles immediate UI. 
+    // We rely on key={id} in App.tsx to reset state when switching anagrams.
+    // UseEffect for sync removed to preventing clearing shuffle on self-triggered updates.
 
     // Shuffle Logic
-    const handleShuffle = () => {
+    const handleShuffle = (poolOverride?: string | React.MouseEvent, knownOverride?: KnownLetters) => {
+        // Handle when called via onClick event
+        let p = pool;
+        if (typeof poolOverride === 'string') {
+            p = poolOverride;
+        }
+
+        const k = knownOverride !== undefined ? knownOverride : known;
+
         // 1. Validate
-        const result = validatePool(pool, known);
+        const result = validatePool(p, k);
         if (!result.valid) {
             setError(result.error || "Validation failed");
             setShuffledChars([]);
@@ -56,8 +58,14 @@ export function AnagramSolver({ data, onUpdate }: AnagramSolverProps) {
         if (result.remaining) {
             const shuffled = shuffleArray(result.remaining);
             setShuffledChars(shuffled);
+        } else {
+            setShuffledChars([]);
         }
     };
+
+    // ...
+
+
 
     const handleKnownChange = (index: number, char: string | null) => {
         const newKnown = { ...known };
@@ -126,11 +134,11 @@ export function AnagramSolver({ data, onUpdate }: AnagramSolverProps) {
                         max={15}
                         step={1}
                         value={length}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        onChange={(e) => {
                             const l = parseInt(e.target.value) || 0;
                             setLength(l);
                             onUpdate({ length: l });
-                            setShuffledChars([]); // Reset shuffle
+                            setShuffledChars([]); // Reset shuffle on manual length change
                         }}
                         className="w-full"
                     />
@@ -148,11 +156,25 @@ export function AnagramSolver({ data, onUpdate }: AnagramSolverProps) {
                 <div className="relative">
                     <Input
                         value={pool}
+                        maxLength={15}
                         onChange={(e) => {
-                            setPool(e.target.value.toUpperCase());
-                            onUpdate({ pool: e.target.value.toUpperCase() });
-                            setShuffledChars([]);
-                            setError(null);
+                            // Upcase, remove non-letters, limit to 15
+                            const val = e.target.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 15);
+                            setPool(val);
+
+                            // Check if we need to expand current length
+                            let newLength = length;
+                            // Only auto-expand, never auto-shrink
+                            if (val.length > length) {
+                                newLength = Math.min(val.length, 15); // Limit to max 15 as per slider
+                                setLength(newLength);
+                            }
+
+                            onUpdate({ pool: val, length: newLength });
+
+                            // Interactive shuffle as we type!
+                            // We must use 'val' because state 'pool' hasn't updated in this closure yet
+                            handleShuffle(val);
                         }}
                         placeholder="Enter all available letters e.g. RRETOPUCM"
                         className={cn("uppercase tracking-widest text-lg h-14 font-mono", error && "border-destructive focus-visible:ring-destructive")}
@@ -223,7 +245,7 @@ export function AnagramSolver({ data, onUpdate }: AnagramSolverProps) {
                 </Button>
 
                 <Button
-                    onClick={handleShuffle}
+                    onClick={() => handleShuffle()}
                     size="lg"
                     className="w-full sm:w-auto px-8 md:px-12 bg-gradient-to-r from-primary to-purple-600 hover:shadow-[0_0_30px_-5px_var(--primary)] transition-all duration-300 active:scale-95"
                 >

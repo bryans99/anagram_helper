@@ -118,7 +118,10 @@ function App() {
             {anagrams.map(anagram => (
               <div
                 key={anagram.id}
-                onClick={() => setSelectedId(anagram.id)}
+                onClick={() => {
+                  setSelectedId(anagram.id)
+                  if (window.innerWidth < 768) setSidebarOpen(false)
+                }}
                 className={cn(
                   "group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all border",
                   selectedId === anagram.id
