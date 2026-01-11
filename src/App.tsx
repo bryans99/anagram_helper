@@ -11,12 +11,41 @@ function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [isSidebarOpen, setSidebarOpen] = useState(true)
 
-  // Select first if available and none selected
+  // Sync selection to/from URL
   useEffect(() => {
-    if (selectedId === null && anagrams.length > 0) {
-      setSelectedId(anagrams[0].id)
+    // Initial Load Logic
+    const params = new URLSearchParams(window.location.search)
+    const nameFromUrl = params.get('name')
+
+    if (nameFromUrl) {
+      const found = anagrams.find(a => a.name === nameFromUrl)
+      if (found) {
+        setSelectedId(found.id)
+        if (window.innerWidth < 768) setSidebarOpen(false)
+      } else {
+        // Not found
+        setSidebarOpen(true)
+        setSelectedId(null)
+      }
+    } else {
+      // No URL param
+      setSidebarOpen(true)
     }
-  }, [anagrams, selectedId])
+  }, []) // Run once on mount
+
+  // Update URL when selection or name changes
+  useEffect(() => {
+    const selected = anagrams.find(a => a.id === selectedId)
+    const url = new URL(window.location.href)
+
+    if (selected) {
+      url.searchParams.set('name', selected.name)
+      window.history.replaceState({}, '', url)
+    } else {
+      url.searchParams.delete('name')
+      window.history.replaceState({}, '', url)
+    }
+  }, [selectedId, anagrams])
 
   const createNewAnagram = () => {
     const newAnagram: AnagramData = {
@@ -29,7 +58,8 @@ function App() {
     }
     setAnagrams([...anagrams, newAnagram])
     setSelectedId(newAnagram.id)
-    // On mobile, close sidebar after creating
+    // On mobile, close sidebar after creating use effect will handle URL loop? 
+    // Actually the logic above for window.history.replaceState is fine.
     if (window.innerWidth < 768) setSidebarOpen(false)
   }
 
@@ -38,7 +68,9 @@ function App() {
     const newAnagrams = anagrams.filter(a => a.id !== id)
     setAnagrams(newAnagrams)
     if (selectedId === id) {
-      setSelectedId(newAnagrams.length > 0 ? newAnagrams[0].id : null)
+      // If deleting the selected one, clear selection (which clears URL via effect)
+      setSelectedId(null)
+      setSidebarOpen(true)
     }
   }
 
