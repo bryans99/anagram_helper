@@ -112,7 +112,7 @@ function App() {
             <h1 className="font-bold text-xl tracking-tight">Anagram<span className="text-primary">Helper</span></h1>
           </div>
 
-          <Button onClick={createNewAnagram} className="w-full mb-6 bg-gradient-to-r from-primary to-purple-600 border-0">
+          <Button onClick={createNewAnagram} className="w-full mb-6 bg-primary hover:bg-primary/90 border-0">
             <Plus className="w-4 h-4 mr-2" /> New Anagram
           </Button>
 

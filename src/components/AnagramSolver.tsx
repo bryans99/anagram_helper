@@ -254,7 +254,7 @@ export function AnagramSolver({ data, onUpdate }: AnagramSolverProps) {
                 <Button
                     onClick={() => handleShuffle()}
                     size="lg"
-                    className="w-full sm:w-auto px-8 md:px-12 bg-gradient-to-r from-primary to-purple-600 hover:shadow-[0_0_30px_-5px_var(--primary)] transition-all duration-300 active:scale-95"
+                    className="w-full sm:w-auto px-8 md:px-12 bg-primary hover:bg-primary/90 hover:shadow-[0_0_30px_-5px_var(--primary)] transition-all duration-300 active:scale-95"
                 >
                     <Shuffle className={cn("w-5 h-5 mr-2", shuffledChars.length > 0 && "transition-transform group-hover:rotate-180")} />
                     Shuffle Letters
