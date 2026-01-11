@@ -53,3 +53,8 @@ To run this project locally:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Built with Antigravity
+
+This application was built using the [Antigravity IDE](https://www.antigravity.com).
+
