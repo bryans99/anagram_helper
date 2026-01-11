@@ -76,8 +76,9 @@ function App() {
     const newAnagrams = anagrams.filter(a => a.id !== id)
     setAnagrams(newAnagrams)
     if (selectedId === id) {
-      // If deleting the selected one, clear selection (which clears URL via effect)
+      // If deleting the selected one, clear selection
       setSelectedId(null)
+      // Ensure sidebar remains open so user can pick another
       setSidebarOpen(true)
     }
   }
@@ -145,10 +146,10 @@ function App() {
                 <button
                   onClick={(e) => deleteAnagram(e, anagram.id)}
                   className={cn(
-                    "p-2 rounded-lg transition-all",
+                    "p-2 rounded-lg transition-all duration-200",
                     selectedId === anagram.id
                       ? "text-primary-foreground/70 hover:bg-black/20 hover:text-white"
-                      : "opacity-0 group-hover:opacity-100 hover:bg-destructive/20 hover:text-destructive text-muted-foreground"
+                      : "text-muted-foreground hover:bg-destructive/20 hover:text-destructive"
                   )}
                   title="Delete Anagram"
                 >
