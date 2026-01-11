@@ -177,6 +177,13 @@ export function AnagramSolver({ data, onUpdate }: AnagramSolverProps) {
                             handleShuffle(val);
                         }}
                         placeholder="Enter all available letters e.g. RRETOPUCM"
+                        onBlur={(e) => {
+                            const val = e.target.value;
+                            if (val.trim()) {
+                                setName(val);
+                                onUpdate({ name: val });
+                            }
+                        }}
                         className={cn("uppercase tracking-widest text-lg h-14 font-mono", error && "border-destructive focus-visible:ring-destructive")}
                     />
                 </div>
