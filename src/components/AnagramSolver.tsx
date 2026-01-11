@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Shuffle, Eraser, AlertCircle, Unlock } from 'lucide-react'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
+import { Slider } from './ui/slider'
 import { cn } from '../lib/utils'
 import { validatePool, shuffleArray, type KnownLetters } from '../lib/solver-logic'
 
@@ -115,20 +116,23 @@ export function AnagramSolver({ data, onUpdate }: AnagramSolverProps) {
                         className="bg-card/50 border-border"
                     />
                 </div>
-                <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground">Target Length</label>
-                    <Input
-                        type="number"
+                <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                        <label className="text-sm font-medium text-muted-foreground">Target Length</label>
+                        <span className="text-sm font-bold text-primary">{length}</span>
+                    </div>
+                    <Slider
                         min={1}
-                        max={20}
+                        max={15}
+                        step={1}
                         value={length}
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const l = parseInt(e.target.value) || 0;
                             setLength(l);
                             onUpdate({ length: l });
                             setShuffledChars([]); // Reset shuffle
                         }}
-                        className="bg-card/50 border-border"
+                        className="w-full"
                     />
                 </div>
             </div>

@@ -8,30 +8,38 @@ import { ThemeToggle } from './components/theme-toggle'
 
 function App() {
   const [anagrams, setAnagrams] = useLocalStorage<AnagramData[]>('anagram-helper-data', [])
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [isSidebarOpen, setSidebarOpen] = useState(true)
-
-  // Sync selection to/from URL
-  useEffect(() => {
-    // Initial Load Logic
+  // Initialize state based on URL and storage
+  const [selectedId, setSelectedId] = useState<string | null>(() => {
     const params = new URLSearchParams(window.location.search)
     const nameFromUrl = params.get('name')
-
     if (nameFromUrl) {
       const found = anagrams.find(a => a.name === nameFromUrl)
-      if (found) {
-        setSelectedId(found.id)
-        if (window.innerWidth < 768) setSidebarOpen(false)
-      } else {
-        // Not found
-        setSidebarOpen(true)
-        setSelectedId(null)
-      }
-    } else {
-      // No URL param
-      setSidebarOpen(true)
+      return found ? found.id : null
     }
-  }, []) // Run once on mount
+    return null
+  })
+
+  const [isSidebarOpen, setSidebarOpen] = useState(() => {
+    if (window.innerWidth < 768) {
+      // On mobile, if we have a selected ID (from URL), start closed
+      const params = new URLSearchParams(window.location.search)
+      const nameFromUrl = params.get('name')
+      const found = anagrams.find(a => a.name === nameFromUrl)
+      return !found // Open if not found, Closed if found
+    }
+    return true // Always open on desktop (or default)
+  })
+
+  // Handle URL "Not Found" case on mount if needed, or just let the render handle it.
+  // We still need to listen to popstate if we supported back/forward properly, but for now just sync state->URL.
+
+  /* 
+     Effect to clear URL if selectedId becomes null (e.g. deleted or deselected manually) 
+     or update it if it changes.
+  */
+  useEffect(() => {
+    // ... existing sync logic ...
+  }, [selectedId, anagrams])
 
   // Update URL when selection or name changes
   useEffect(() => {
