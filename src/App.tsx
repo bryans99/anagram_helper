@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Plus, Trash2, Menu, X, BrainCircuit } from 'lucide-react'
 import { useLocalStorage } from './hooks/use-local-storage'
 import { cn } from './lib/utils'
@@ -8,6 +8,12 @@ import { ThemeToggle } from './components/theme-toggle'
 
 function App() {
   const [anagrams, setAnagrams] = useLocalStorage<AnagramData[]>('anagram-helper-data', [])
+
+  // Sort anagrams by createdAt desc (newest first)
+  const sortedAnagrams = useMemo(() => {
+    return [...anagrams].sort((a, b) => b.createdAt - a.createdAt)
+  }, [anagrams])
+
   // Initialize state based on URL and storage
   const [selectedId, setSelectedId] = useState<string | null>(() => {
     const params = new URLSearchParams(window.location.search)
@@ -111,12 +117,12 @@ function App() {
           </Button>
 
           <div className="flex-1 overflow-y-auto space-y-2 pr-2">
-            {anagrams.length === 0 && (
+            {sortedAnagrams.length === 0 && (
               <div className="text-center text-muted-foreground text-sm py-10">
                 No saved anagrams.<br />Create one to get started!
               </div>
             )}
-            {anagrams.map(anagram => (
+            {sortedAnagrams.map(anagram => (
               <div
                 key={anagram.id}
                 onClick={() => {
