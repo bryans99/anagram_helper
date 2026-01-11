@@ -112,7 +112,7 @@ export function AnagramSolver({ data, onUpdate }: AnagramSolverProps) {
                     <Input
                         value={name}
                         onChange={(e) => { setName(e.target.value); onUpdate({ name: e.target.value }) }}
-                        className="bg-card/50 border-white/10"
+                        className="bg-card/50 border-border"
                     />
                 </div>
                 <div className="space-y-2">
@@ -128,7 +128,7 @@ export function AnagramSolver({ data, onUpdate }: AnagramSolverProps) {
                             onUpdate({ length: l });
                             setShuffledChars([]); // Reset shuffle
                         }}
-                        className="bg-card/50 border-white/10"
+                        className="bg-card/50 border-border"
                     />
                 </div>
             </div>
@@ -170,8 +170,8 @@ export function AnagramSolver({ data, onUpdate }: AnagramSolverProps) {
                             <div className={cn(
                                 "w-10 h-14 sm:w-12 sm:h-16 md:w-16 md:h-20 lg:w-20 lg:h-24 rounded-xl flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-bold transition-all duration-300",
                                 slot.isKnown
-                                    ? "bg-primary text-primary-foreground shadow-[0_0_30px_-5px_var(--primary)] scale-105 z-10 border-2 border-white/20"
-                                    : "bg-white/10 border border-white/20 text-muted-foreground hover:bg-white/15"
+                                    ? "bg-primary text-primary-foreground shadow-[0_0_30px_-5px_var(--primary)] scale-105 z-10 border-2 border-primary/20"
+                                    : "bg-secondary/50 border border-border/50 text-foreground hover:bg-secondary"
                             )}>
                                 {slot.char}
 
